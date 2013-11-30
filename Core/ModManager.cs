@@ -176,9 +176,16 @@ namespace ScrollsModLoader
 			{
 				return true;
 			}
-			else // for example "application/json" or none at all, error
-			{
-				return false;
+			else 
+			{   // from github its an text/plain file
+				if (mod.source.url.StartsWith ("https://raw.github.com/") && contentType.Equals("text/plain"))
+				{
+					return true;
+				}
+				else // for example "application/json" or none at all, error
+				{
+					return false;
+				}
 			}
 		}
 		

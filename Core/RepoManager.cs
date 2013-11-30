@@ -36,7 +36,7 @@ namespace ScrollsModLoader
 		public void tryAddRepository(string url) {
 
 			foreach (Item repo in repositories) {
-				if (new Uri ((repo as Repo).url).Host.Equals (new Uri (url).Host))
+				if ((repo as Repo).url.Equals( url))
 					return;
 			}
 
@@ -49,14 +49,25 @@ namespace ScrollsModLoader
 
 		private bool readRepository(string url) {
 
+			System.Net.ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;// or you get an exeption, because mono doesnt trust anyone
 			//normalize it
-			Uri urlNorm = new Uri (url);
-			url = urlNorm.Host;
 
+			if (!url.StartsWith ("https://raw.github.com/")) {
+				Uri urlNorm = new Uri (url);
+				url = urlNorm.Host;
+			} 
 			String repoinfo = null;
 			try {
 				WebClientTimeOut client = new WebClientTimeOut ();
-				repoinfo = client.DownloadString (new Uri("http://"+url+"/repoinfo"));
+				if(url.StartsWith("https://raw.github.com/"))
+				{
+					repoinfo = client.DownloadString (new Uri(url+"/repoinfo.txt"));
+				}
+				else
+				{
+					repoinfo = client.DownloadString (new Uri("http://"+url+"/repoinfo"));
+				}
+
 			} catch (WebException ex) {
 				Console.WriteLine (ex);
 				return false;
@@ -95,7 +106,14 @@ namespace ScrollsModLoader
 			String modlist = null;
 			try {
 				WebClientTimeOut client = new WebClientTimeOut ();
-				modlist = client.DownloadString (new Uri(repo.url+"modlist"));
+				if(repo.url.StartsWith("https://raw.github.com/"))
+				{
+					modlist = client.DownloadString (new Uri(repo.url+"modlist.txt"));
+				}
+				else
+				{
+					modlist = client.DownloadString (new Uri(repo.url+"modlist"));
+				}
 			} catch (WebException ex) {
 				Console.WriteLine (ex);
 				repositories.Remove (repo);
