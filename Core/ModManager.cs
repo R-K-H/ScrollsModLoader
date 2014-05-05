@@ -178,7 +178,7 @@ namespace ScrollsModLoader
 			}
 			else 
 			{   // from github its an text/plain file
-				if (mod.source.url.StartsWith ("https://raw.github.com/") && contentType.Equals("text/plain"))
+				if (mod.source.url.StartsWith ("https://raw.github.com/") && (contentType.Equals("text/plain") || contentType.Equals("application/octet-stream")))
 				{
 					return true;
 				}
