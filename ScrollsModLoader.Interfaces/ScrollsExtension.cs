@@ -9,7 +9,7 @@ public static class ScrollsExtension
 		api = modAPI;
 	}
 
-	public static void ShowTextInput(this Popups popups, IOkStringCancelCallback callback, string loadedDeckName, string problems, string popupType, string header, string description, string okText)
+	public static void ShowTextInput(this Popups popups, IDeckSaveCallback callback, string loadedDeckName, string problems, string popupType, string header, string description, string okText)
 	{
 		popups.ShowSaveDeck (callback, loadedDeckName, problems);
 		typeof(Popups).GetField ("popupType", BindingFlags.Instance | BindingFlags.NonPublic).SetValue (popups, popupType);

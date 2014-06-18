@@ -189,7 +189,8 @@ namespace ScrollsModLoader
 
 			GUI.skin.label.fontSize = 18;
 			if (GUI.Button (new Rect((float)Screen.width/15.0f+(float)Screen.width/35.0f, (float)Screen.height/5.0f+(float)Screen.height/30.0f + (float)Screen.height/6.0f*4.0f-(float)Screen.height/15.0f-80.0f, (float)Screen.width/9.0f-1.0f, (float)Screen.width/35.0f), string.Empty)) {
-				App.Popups.ShowTextInput (this, "http://", "WARNING: Other repositories are NOT trusted by Scrollsguide.", "addRepo", "Add Repository", "Please enter the URL of the repository you want to add", "Add");
+				//App.Popups.ShowTextEntry (this, "http://", "WARNING: Other repositories are NOT trusted by Scrollsguide.", "addRepo", "Add Repository", "Please enter the URL of the repository you want to add", "Add");
+				App.Popups.ShowTextEntry (this, "addRepo","Add Repository","WARNING: Other repositories are NOT trusted by Scrollsguide.", "Add",   "Please enter the URL of the repository you want to add", "http://");
 			}
 			GUI.Label(new Rect((float)Screen.width/15.0f+(float)Screen.width/35.0f, (float)Screen.height/5.0f+(float)Screen.height/30.0f + (float)Screen.height/6.0f*4.0f-(float)Screen.height/15.0f-80.0f, (float)Screen.width/9.0f-1.0f, (float)Screen.width/35.0f), "Add Repository");
 

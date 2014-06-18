@@ -6,7 +6,7 @@ using ScrollsModLoader.Interfaces;
 
 namespace ScrollsModLoader
 {
-	public class PatchPopups : Patch, IOkStringCancelCallback
+	public class PatchPopups : Patch, IOkStringCancelCallback, IDeckSaveCallback
 	{
 		private static PatchPopups instance;
 		public String encryptedPassword;
@@ -55,6 +55,10 @@ namespace ScrollsModLoader
 
 		public void PopupCancel (string popupType) {
 			callback.PopupCancel (popupType);
+		}
+
+		public void PopupExport(string s , string t)
+		{
 		}
 
 		private enum PopupType
