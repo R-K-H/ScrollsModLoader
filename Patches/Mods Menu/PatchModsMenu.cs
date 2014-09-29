@@ -56,6 +56,7 @@ namespace ScrollsModLoader
 				return new MethodDefinition[] {DrawHeaderButtons, GetButtonPositioner};
 			}
 		}
+			
 
 		public override object Intercept (IInvocationInfo info)
 		{
@@ -89,7 +90,6 @@ namespace ScrollsModLoader
 					textactive = new Texture2D(84, 30, TextureFormat.ARGB32, false, true); //115, 39
 					textactive.LoadImage(System.Reflection.Assembly.GetExecutingAssembly ().GetManifestResourceStream ("ScrollsModLoader.Resources.button_mods_dark.png").ReadToEnd ());
 					textactive.filterMode = FilterMode.Bilinear;
-
 					gUISkin7.button.normal.background = textnormal;
 					gUISkin7.button.hover.background = texthover;
 					gUISkin7.button.active.background = textactive;
@@ -97,14 +97,18 @@ namespace ScrollsModLoader
 					defaultTextSize = GUI.skin.label.fontSize;
 
 					//info.Target.GUISkins.Add (gUISkin5);
-					FieldInfo GUISkins = lobbyMenu.GetField("GUISkins", BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance);
-					((List<GUISkin>)(GUISkins.GetValue(info.Target))).Add(gUISkin7);
+					FieldInfo GUISkins = lobbyMenu.GetField("buttons", BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance);
 
+					//((List<GUISkin>)(GUISkins.GetValue(info.Target))).Add(gUISkin7);
+
+					Type button = (Type)lobbyMenu.GetNestedType("Button", BindingFlags.NonPublic|BindingFlags.Instance);
+					//Console.WriteLine("The name of the nested class is {0}.", button.ToString());
+					object aNewButton = Activator.CreateInstance(button, new object[]{7, "_Mods", gUISkin7});
+					((IList)(GUISkins.GetValue(info.Target))).Add(aNewButton);
 					((LobbyMenu)info.Target).AdjustForResolution();
 
 					first = false;
 				}
-
 				object index = typeof(LobbyMenu).GetField ("_hoverButtonIndex", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(info.Target);
 				object ret = info.TargetMethod.Invoke(info.Target, info.Arguments);
 
@@ -116,18 +120,17 @@ namespace ScrollsModLoader
 
 				MethodInfo drawHeader = lobbyMenu.GetMethod ("drawHeaderButton", BindingFlags.NonPublic | BindingFlags.Instance);
 				drawHeader.Invoke(info.Target, new object[] {7, "_Mods"});
-
 				if (!((bool)typeof(LobbyMenu).GetField ("_hoverButtonInside", BindingFlags.Instance | BindingFlags.NonPublic).GetValue (info.Target))) {
 					typeof(LobbyMenu).GetField ("_hoverButtonIndex", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(info.Target, newindex);
 					typeof(LobbyMenu).GetField ("_hoverButtonInside", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(info.Target, newinside);
 				}
-
 				return ret;
 
 				//object headerPositioner = typeof(LobbyMenu).GetField ("_headerPositioner", BindingFlags.Instance | BindingFlags.NonPublic).GetValue (info.Target);
 				//typeof(LobbyMenu).GetField ("buttonMaxX", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(info.Target, ((Rect)headerPositioner.GetType().GetMethod("getButtonRect").Invoke(headerPositioner, new object[] { 6f, 0f })).x);
 
 			} catch (Exception exp) {
+				Console.WriteLine ("error " + info.TargetMethod.Name);
 				Console.WriteLine (exp);
 				return info.TargetMethod.Invoke(info.Target, info.Arguments);
 			}	

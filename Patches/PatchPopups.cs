@@ -17,6 +17,11 @@ namespace ScrollsModLoader
 			instance = this;
 		}
 
+		public void PopupSaveAIDeck(string pupupType, string choice)
+		{
+			int i = 0;
+		}
+
 		public override Mono.Cecil.MethodDefinition[] patchedMethods ()
 		{
 			MethodDefinition PopupOk = Hooks.getMethDef (Hooks.getTypeDef (assembly, "Popups"), "OnGUI");
