@@ -58,7 +58,9 @@ namespace ScrollsModLoader
             }
 
             String gameFolder = Path.GetFullPath(Directory.GetParent(Platform.getGlobalScrollsInstallPath()).Parent.Parent.Parent.FullName) + Path.DirectorySeparatorChar;
-
+			String modLoaderPath = Platform.getModLoaderPath ();
+			String globalScrollsInstallPath = Platform.getGlobalScrollsInstallPath ();
+			Console.WriteLine ("patch windof");
             //wait
             WebClientTimeOut webClient = new WebClientTimeOut();
             if (File.Exists(gameFolder + "game.zip"))
@@ -80,15 +82,15 @@ namespace ScrollsModLoader
             {
                 File.Delete(backupPath);
             }
-            File.Copy(Platform.getGlobalScrollsInstallPath() + "ScrollsModLoader.dll", backupPath);
+			File.Copy(globalScrollsInstallPath + "ScrollsModLoader.dll", backupPath);
 
             //backup modloader folder
-            String modBackupPath = gameFolder + "ModLoader" + Path.DirectorySeparatorChar;
+			String modBackupPath = modLoaderPath + Path.DirectorySeparatorChar;//gameFolder + "ModLoader" + Path.DirectorySeparatorChar;
             if (Directory.Exists(modBackupPath))
             {
                 Extensions.DeleteDirectory(modBackupPath);
             }
-            Directory.Move(Platform.getGlobalScrollsInstallPath() + "ModLoader", modBackupPath);
+			Directory.Move(modLoaderPath, modBackupPath);
             File.Delete(modBackupPath + "mods.ini");
             File.Delete(modBackupPath + "Assembly-CSharp.dll");
 
@@ -109,27 +111,27 @@ namespace ScrollsModLoader
             }
 
             //move assembly
-            File.Copy(backupPath, Platform.getGlobalScrollsInstallPath() + "ScrollsModLoader.dll");
+			File.Copy(backupPath, globalScrollsInstallPath + "ScrollsModLoader.dll");
             // File.Delete(backupPath);
 
             //move modloader folder back
-            Directory.Move(modBackupPath, Platform.getGlobalScrollsInstallPath() + "ModLoader");
+			Directory.Move(modBackupPath, modLoaderPath);//Platform.getGlobalScrollsInstallPath() + "ModLoader");
 
             //make new repatch backup
-            File.Copy(Platform.getGlobalScrollsInstallPath() + "Assembly-CSharp.dll", Platform.getGlobalScrollsInstallPath() + "ModLoader" + Path.DirectorySeparatorChar + "Assembly-CSharp.dll");
+			File.Copy(globalScrollsInstallPath + "Assembly-CSharp.dll", modLoaderPath + Path.DirectorySeparatorChar + "Assembly-CSharp.dll");
 
 			//make sure mods get hooks set with new version
-			File.Delete (Platform.getGlobalScrollsInstallPath () + "ModLoader" + Path.DirectorySeparatorChar + "mods.ini");
+			File.Delete (modLoaderPath + Path.DirectorySeparatorChar + "mods.ini");
 			ScrollsFilter.clearHooks ();
 			Console.WriteLine("Cleared Hooks");
 			
 			//repatch
 			Patcher patcher = new Patcher ();
-			if (!patcher.patchAssembly (Platform.getGlobalScrollsInstallPath ())) {
+			if (!patcher.patchAssembly (globalScrollsInstallPath)) {
 				if (!patcher.safeModePatchAssembly ()) {
 					Dialogs.showNotification ("Summoner patch failed", "Summoner failed in patch itself into the updated files. It will uninstall itself. For more informations visit scrollsguide.com/summoner");
-					File.Delete (Platform.getGlobalScrollsInstallPath () + "ScrollsModLoader.dll");
-					Extensions.DeleteDirectory (Platform.getGlobalScrollsInstallPath () + "ModLoader");
+					File.Delete (globalScrollsInstallPath + "ScrollsModLoader.dll");
+					Extensions.DeleteDirectory (modLoaderPath);//Platform.getGlobalScrollsInstallPath () + "ModLoader");
 				}
 			}
 
@@ -149,7 +151,8 @@ namespace ScrollsModLoader
 			}
 
 			String gameFolder = Path.GetFullPath(Directory.GetParent(Platform.getGlobalScrollsInstallPath()).Parent.Parent.Parent.Parent.FullName)+ Path.DirectorySeparatorChar;
-
+			String modLoaderPath = Platform.getModLoaderPath ();
+			String globalScrollsInstallPath = Platform.getGlobalScrollsInstallPath ();
 			//wait
 			WebClientTimeOut webClient = new WebClientTimeOut();
 			if (File.Exists (gameFolder + "game.zip"))
@@ -169,14 +172,14 @@ namespace ScrollsModLoader
 			if (File.Exists(backupPath)){
 				File.Delete (backupPath);
 			}
-			File.Copy (Platform.getGlobalScrollsInstallPath() + "ScrollsModLoader.dll", backupPath);
+			File.Copy (globalScrollsInstallPath + "ScrollsModLoader.dll", backupPath);
 
 			//backup modloader folder
-			String modBackupPath = gameFolder + "ModLoader" + Path.DirectorySeparatorChar;
+			String modBackupPath = modLoaderPath+ Path.DirectorySeparatorChar;
 			if (Directory.Exists (modBackupPath)){
 				Extensions.DeleteDirectory (modBackupPath);
 			}
-			Directory.Move (Platform.getGlobalScrollsInstallPath() + "ModLoader", modBackupPath);
+			Directory.Move (modLoaderPath , modBackupPath);
 			File.Delete (modBackupPath + "mods.ini");
 			File.Delete (modBackupPath + "Assembly-CSharp.dll");
 
@@ -201,26 +204,26 @@ namespace ScrollsModLoader
 			}
 
 			//move assembly
-			File.Copy (backupPath, Platform.getGlobalScrollsInstallPath () + "ScrollsModLoader.dll");
+			File.Copy (backupPath, globalScrollsInstallPath + "ScrollsModLoader.dll");
 			File.Delete (backupPath);
 
 			//move modloader folder back
-			Directory.Move (modBackupPath, Platform.getGlobalScrollsInstallPath () + "ModLoader");
+			Directory.Move (modBackupPath, modLoaderPath);
 
 			//make new repatch backup
-			File.Copy (Platform.getGlobalScrollsInstallPath () + "Assembly-CSharp.dll", Platform.getGlobalScrollsInstallPath () + "ModLoader" + Path.DirectorySeparatorChar + "Assembly-CSharp.dll");
+			File.Copy (globalScrollsInstallPath + "Assembly-CSharp.dll", modLoaderPath + Path.DirectorySeparatorChar + "Assembly-CSharp.dll");
 
 			//make sure mods get hooks set with new version
-			File.Delete (Platform.getGlobalScrollsInstallPath () + "ModLoader" + Path.DirectorySeparatorChar + "mods.ini");
+			File.Delete (modLoaderPath + Path.DirectorySeparatorChar + "mods.ini");
 			ScrollsFilter.clearHooks ();
 
 			//repatch
 			Patcher patcher = new Patcher ();
-			if (!patcher.patchAssembly (Platform.getGlobalScrollsInstallPath ())) {
+			if (!patcher.patchAssembly (globalScrollsInstallPath)) {
 				if (!patcher.safeModePatchAssembly ()) {
 					Dialogs.showNotification ("Summoner patch failed", "Summoner failed in patch itself into the updated files. It will uninstall itself. For more informations visit scrollsguide.com/summoner");
-					File.Delete (Platform.getGlobalScrollsInstallPath () + "ScrollsModLoader.dll");
-					Extensions.DeleteDirectory (Platform.getGlobalScrollsInstallPath () + "ModLoader");
+					File.Delete (globalScrollsInstallPath + "ScrollsModLoader.dll");
+					Extensions.DeleteDirectory (modLoaderPath);
 				}
 			}
 

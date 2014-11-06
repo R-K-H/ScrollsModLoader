@@ -38,23 +38,24 @@ namespace ScrollsModLoader
 
 			//get Path of Scrolls Data Folder
 			String installPath = Platform.getGlobalScrollsInstallPath();
+			String modloaderpath = Platform.getModLoaderPath();
 			if (installPath == null) return;
-
+			Console.WriteLine ("installpath: " +installPath);
 			Console.WriteLine ("Creating ModLoader folder...");
 
 			//create modloader folder
-			if (!System.IO.Directory.Exists(installPath+"ModLoader")) {
-				System.IO.Directory.CreateDirectory(installPath+"ModLoader");
+			if (!System.IO.Directory.Exists(modloaderpath)) {
+				System.IO.Directory.CreateDirectory(modloaderpath);
 			}
 
 			Console.WriteLine ("Backup/Reset assembly...");
 			//backup original assembly
-			if (!System.IO.File.Exists(installPath+"ModLoader"+ System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll"))
-				System.IO.File.Copy (installPath+"Assembly-CSharp.dll", installPath + "ModLoader"+ System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll");
+			if (!System.IO.File.Exists(modloaderpath+ System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll"))
+				System.IO.File.Copy (installPath+"Assembly-CSharp.dll", modloaderpath + System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll");
 			else {
 			//if a backup already exists, it is much more likely that the current assembly is messed up and the user wants to repatch
 				System.IO.File.Delete(installPath+"Assembly-CSharp.dll");
-				System.IO.File.Copy(installPath+"ModLoader"+ System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll", installPath+"Assembly-CSharp.dll");
+				System.IO.File.Copy(modloaderpath + System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll", installPath+"Assembly-CSharp.dll");
 			}
 
 			Console.WriteLine ("Copying ModLoader.dll...");
@@ -64,8 +65,8 @@ namespace ScrollsModLoader
 			System.IO.File.Copy(System.Reflection.Assembly.GetExecutingAssembly().Location, installPath+"ScrollsModLoader.dll");
 
 			//reset ini
-			if (System.IO.File.Exists(installPath+"ModLoader"+ System.IO.Path.DirectorySeparatorChar +"mods.ini"))
-				System.IO.File.Delete(installPath+"ModLoader"+ System.IO.Path.DirectorySeparatorChar +"mods.ini");
+			if (System.IO.File.Exists(modloaderpath+ System.IO.Path.DirectorySeparatorChar +"mods.ini"))
+				System.IO.File.Delete(modloaderpath+ System.IO.Path.DirectorySeparatorChar +"mods.ini");
 
 			Console.WriteLine ("Patching...");
 			//patch it
@@ -77,6 +78,31 @@ namespace ScrollsModLoader
 				Dialogs.showNotification ("Patching failed", "Scrolls Summoner was unable to prepare your client, you are likely using an incompatible version. More at scrollsguide.com");
 				return;
 			}
+
+			Console.WriteLine("Create shortcut...");
+
+			String apppath = installPath.Split (new string[]{ "Scrolls_Data" +  System.IO.Path.DirectorySeparatorChar}, StringSplitOptions.RemoveEmptyEntries) [0];
+			String fpath = installPath.Split (new string[]{ "game" +  System.IO.Path.DirectorySeparatorChar + "versions"}, StringSplitOptions.RemoveEmptyEntries) [0];
+			string ddsc = System.IO.Path.DirectorySeparatorChar+"";
+			string args = "--assetsDir \""+ fpath +"game"+ddsc+"assets"+ddsc+"objects\" --assetIndex \""+fpath+ "game"+ddsc+"assets"+ddsc+"indexes"+ddsc+"index-133-production-win.json\"";
+			String filetxt = "";
+			switch (Platform.getOS ()) 
+			{
+			case Platform.OS.Win:
+				apppath += "Scrolls.exe";
+				fpath += "summoner.bat";
+				filetxt = "START \"\" \"" + apppath + "\" " + args;
+				break;
+			case Platform.OS.Mac:
+				apppath+="Scrolls.app";
+				break;
+			default:
+				break;
+			}
+
+			System.IO.File.WriteAllText (fpath, filetxt);
+
+
 
 			Dialogs.showNotification ("Patching complete", "Summoner successfully patched your Scrolls installation. Visit scrollsguide.com/summoner for more information. You can now start Scrolls and enjoy the benefits of Summoner. Warning: fullscreen users may have to manually restart the game");
 			Console.WriteLine ("Done");

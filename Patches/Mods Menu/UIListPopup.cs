@@ -100,11 +100,11 @@ public class UIListPopup : MonoBehaviour
         GUI.skin = this.cardListPopupSkin;
         GUI.color = new Color(GUI.color.r, GUI.color.g, GUI.color.b, this.opacity);
         Rect position = new Rect(this.outerRect.x + this.offX, this.outerRect.y, this.outerRect.width, this.outerRect.height);
-        Rect rect2 = new Rect(this.innerBGRect.x + this.offX, this.innerBGRect.y, this.innerBGRect.width, this.innerBGRect.height);
+		Rect rect2 = new Rect(this.innerBGRect.x + this.offX, this.innerBGRect.y, this.innerBGRect.width, this.innerBGRect.height);
         Rect rect3 = new Rect(this.innerRect.x + this.offX, this.innerRect.y, this.innerRect.width, this.innerRect.height);
         Rect rect4 = new Rect(this.buttonLeftRect.x + this.offX, this.buttonLeftRect.y, this.buttonLeftRect.width, this.buttonLeftRect.height);
         Rect rect5 = new Rect(this.buttonRightRect.x + this.offX, this.buttonRightRect.y, this.buttonRightRect.width, this.buttonRightRect.height);
-        if (this.showFrame)
+		if (this.showFrame)
         {
             GUI.Box(position, string.Empty);
         }
@@ -114,7 +114,7 @@ public class UIListPopup : MonoBehaviour
         this.cardListPopupBigLabelSkin.label.fontSize = (int) (this.fieldHeight / 1.7f);
         this.cardListPopupSkin.label.fontSize = (int) (this.fieldHeight / 2.5f);
         this.scrollPos = GUI.BeginScrollView(rect3, this.scrollPos, new Rect(0f, 0f, this.innerRect.width - 20f, this.fieldHeight * this.cards.Count));
-        int num = 0;
+		int num = 0;
         Item card = null;
         foreach (Item card2 in this.cards)
         {
@@ -218,7 +218,7 @@ public class UIListPopup : MonoBehaviour
 						App.AudioScript.PlaySFX("Sounds/hyperduck/UI/ui_button_click");
 					}
 					if (!(card2 as ScrollsModLoader.LocalMod).queueForUninstall) {
-						if (GUI.Button (rect11, string.Empty, ((GUISkin)Resources.Load("_GUISkins/CloseButton")).button)) {
+							if (GUI.Button (rect11, string.Empty, ((GUISkin)ResourceManager.Load("_GUISkins/CloseButton")).button)) {
 							callback.ItemCanceled (this, card2);	
 							GUI.DrawTexture(rect11, ResourceManager.LoadTexture("Arena/scroll_browser_button_cb_checked"));
 							App.AudioScript.PlaySFX("Sounds/hyperduck/UI/ui_button_click");
@@ -462,11 +462,11 @@ public class UIListPopup : MonoBehaviour
 	
     private void Start()
     {
-        this.lobbySkin = (GUISkin) Resources.Load("_GUISkins/Lobby");
-        this.cardListPopupSkin = (GUISkin) Resources.Load("_GUISkins/CardListPopup");
-        this.cardListPopupGradientSkin = (GUISkin) Resources.Load("_GUISkins/CardListPopupGradient");
-        this.cardListPopupBigLabelSkin = (GUISkin) Resources.Load("_GUISkins/CardListPopupBigLabel");
-        this.cardListPopupLeftButtonSkin = (GUISkin) Resources.Load("_GUISkins/CardListPopupLeftButton");
+			this.lobbySkin = (GUISkin) ResourceManager.Load("_GUISkins/Lobby");
+			this.cardListPopupSkin = (GUISkin) ResourceManager.Load("_GUISkins/CardListPopup");
+			this.cardListPopupGradientSkin = (GUISkin) ResourceManager.Load("_GUISkins/CardListPopupGradient");
+			this.cardListPopupBigLabelSkin = (GUISkin) ResourceManager.Load("_GUISkins/CardListPopupBigLabel");
+			this.cardListPopupLeftButtonSkin = (GUISkin) ResourceManager.Load("_GUISkins/CardListPopupLeftButton");
     }
 
     private void Update()

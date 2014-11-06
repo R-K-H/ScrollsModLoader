@@ -273,7 +273,7 @@ namespace ScrollsModLoader {
 
 		public ModLoader ()
 		{
-			modLoaderPath = Platform.getGlobalScrollsInstallPath() + System.IO.Path.DirectorySeparatorChar + "ModLoader" + System.IO.Path.DirectorySeparatorChar;
+			modLoaderPath = Platform.getModLoaderPath()+ System.IO.Path.DirectorySeparatorChar;//Platform.getGlobalScrollsInstallPath() + System.IO.Path.DirectorySeparatorChar + "ModLoader" + System.IO.Path.DirectorySeparatorChar;
 
 
 			//load installed mods
@@ -579,6 +579,10 @@ namespace ScrollsModLoader {
 
 		public void repatch()
 		{
+
+			String installPath = Platform.getGlobalScrollsInstallPath ();
+			String modLoaderPath = Platform.getModLoaderPath ();
+
 				//save ModList
 				File.Delete (modLoaderPath+"mods.ini");
 				StreamWriter modOrderWriter = File.CreateText (modLoaderPath+"mods.ini");
@@ -588,19 +592,20 @@ namespace ScrollsModLoader {
 				modOrderWriter.Flush ();
 				modOrderWriter.Close ();
 
-				String installPath = Platform.getGlobalScrollsInstallPath ();
+				
+
 				File.Delete(installPath+"Assembly-CSharp.dll");
-				File.Copy(installPath+"ModLoader"+ System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll", installPath+"Assembly-CSharp.dll");
+			File.Copy(modLoaderPath + System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll", installPath+"Assembly-CSharp.dll");
 
 				Patcher patcher = new Patcher ();
-				if (!patcher.patchAssembly (Platform.getGlobalScrollsInstallPath ())) {
+			if (!patcher.patchAssembly (installPath)) {
 					//normal patching should never fail at this point
 					//because this is no update and we are already patched
 					//TO-DO get hook that crashed the patching and deactive mod instead
 					//No idea how to do that correctly
 					Dialogs.showNotification ("Scrolls is broken", "Your Scrolls install appears to be broken or modified by other tools. Scrolls Summoner failed to load and will de-install itself");
-					File.Delete(Platform.getGlobalScrollsInstallPath()+"Assembly-CSharp.dll");
-					File.Copy(Platform.getGlobalScrollsInstallPath()+"ModLoader"+ System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll", Platform.getGlobalScrollsInstallPath()+"Assembly-CSharp.dll");
+				File.Delete(installPath+"Assembly-CSharp.dll");
+				File.Copy(modLoaderPath+ System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll", installPath+"Assembly-CSharp.dll");
 					Application.Quit();
 				}
 

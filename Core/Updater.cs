@@ -28,7 +28,7 @@ namespace ScrollsModLoader
 			VersionMessage versionMessage = (VersionMessage)reader.Read (versionMessageRaw, typeof(VersionMessage));
 
 			int version = versionMessage.version ();
-			String installPath = Platform.getGlobalScrollsInstallPath () + Path.DirectorySeparatorChar + "ModLoader" + Path.DirectorySeparatorChar;
+			String installPath = Platform.getModLoaderPath() + Path.DirectorySeparatorChar; //;Platform.getGlobalScrollsInstallPath () + Path.DirectorySeparatorChar + "ModLoader" + Path.DirectorySeparatorChar;
 
 			try {
 				File.Delete (installPath + "Updater.exe");

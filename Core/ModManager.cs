@@ -28,12 +28,14 @@ namespace ScrollsModLoader
 			repoManager = new RepoManager (this);
 
 			String installPath = Platform.getGlobalScrollsInstallPath();
-			String modLoaderPath = installPath + "ModLoader" + System.IO.Path.DirectorySeparatorChar;
+			String modLoaderPath = Platform.getModLoaderPath() + System.IO.Path.DirectorySeparatorChar;
 
-			if (!Directory.Exists (modLoaderPath+"mods"))
-				Directory.CreateDirectory (modLoaderPath+"mods");
+			modsPath = Platform.getModsPath();
 
-			modsPath = modLoaderPath + "mods";
+			if (!Directory.Exists (modsPath))
+				Directory.CreateDirectory (modsPath);
+
+
 
 			this.loadInstalledMods ();
 			this.checkForUpdates   ();
@@ -225,7 +227,9 @@ namespace ScrollsModLoader
 			mod.enabled = true;
 			this.updateConfig (mod);
 			ScrollsFilter.clearHooks ();
-			String modLoaderPath = Platform.getGlobalScrollsInstallPath() + "ModLoader" + System.IO.Path.DirectorySeparatorChar;
+
+			String modLoaderPath = Platform.getModLoaderPath() + System.IO.Path.DirectorySeparatorChar;
+
 			TypeDefinitionCollection types = AssemblyFactory.GetAssembly (modLoaderPath+"Assembly-CSharp.dll").MainModule.Types;
 			loader.loadModsStatic (types);
 			loader.addPatchHooks ();
@@ -240,7 +244,7 @@ namespace ScrollsModLoader
 			loader._unloadMod (mod);
 			if (rebuild) {
 				ScrollsFilter.clearHooks ();
-				String modLoaderPath = Platform.getGlobalScrollsInstallPath() + "ModLoader" + System.IO.Path.DirectorySeparatorChar;
+				String modLoaderPath = Platform.getModLoaderPath() + System.IO.Path.DirectorySeparatorChar;
 				TypeDefinitionCollection types = AssemblyFactory.GetAssembly (modLoaderPath+"Assembly-CSharp.dll").MainModule.Types;
 				loader.loadModsStatic (types);
 				loader.addPatchHooks ();

@@ -23,7 +23,7 @@ namespace ScrollsModLoader
 
 			//load repo list
 			String installPath = Platform.getGlobalScrollsInstallPath();
-			String modLoaderPath = installPath + "ModLoader" + System.IO.Path.DirectorySeparatorChar;
+			String modLoaderPath = Platform.getModLoaderPath() + System.IO.Path.DirectorySeparatorChar;
 			if (!File.Exists (modLoaderPath+"repo.ini")) {
 				File.CreateText (modLoaderPath+"repo.ini").Close();
 			}
@@ -169,7 +169,7 @@ namespace ScrollsModLoader
 
 		public void updateRepoList() {
 			String installPath = Platform.getGlobalScrollsInstallPath();
-			String modLoaderPath = installPath + "ModLoader" + System.IO.Path.DirectorySeparatorChar;
+			String modLoaderPath = Platform.getModLoaderPath() + System.IO.Path.DirectorySeparatorChar;
 			File.Delete (modLoaderPath+"repo.ini");
 			StreamWriter repoWriter = File.CreateText (modLoaderPath+"repo.ini");
 			foreach (Repo repo in repositories) {

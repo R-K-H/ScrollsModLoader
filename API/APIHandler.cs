@@ -55,7 +55,7 @@ namespace ScrollsModLoader
 			if (installpath == null && currentlyLoading != null)
 				return Path.GetDirectoryName(currentlyLoading.installPath);
 			if (installpath == null)
-				return Platform.getGlobalScrollsInstallPath () + "ModLoader" + Path.DirectorySeparatorChar + "mods" + Path.DirectorySeparatorChar + "Unknown" + Path.DirectorySeparatorChar;
+				return Platform.getModLoaderPath() + Path.DirectorySeparatorChar + "mods" + Path.DirectorySeparatorChar + "Unknown" + Path.DirectorySeparatorChar;
 			return Path.GetDirectoryName(installpath);
 		}
 
