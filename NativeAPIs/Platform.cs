@@ -50,7 +50,8 @@ namespace ScrollsModLoader
 
 		public static void ErrorLog(string s)
 		{
-			string path = Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly().Location).ToString () + Path.DirectorySeparatorChar + "summonerlog.txt";
+			string dsc = System.IO.Path.DirectorySeparatorChar+"";
+			string path = System.IO.Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString ().Replace( "Summoner.app" + dsc + "Contents" + dsc + "MacOS", "") + "summonerlog1.txt";
 			if (!System.IO.File.Exists (path)) 
 			{
 				System.IO.File.WriteAllText (path, s+"\r\n");
@@ -83,6 +84,7 @@ namespace ScrollsModLoader
 			return path;
 		}
 
+
 		public static String getGlobalScrollsInstallPath() {
 			String path = null;
 
@@ -96,18 +98,29 @@ namespace ScrollsModLoader
 			}
 
 			// we are located in ScrollsLauncher folder
+			string searchpath = Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString () + Path.DirectorySeparatorChar + "game"+ Path.DirectorySeparatorChar;
+			string dsc = Path.DirectorySeparatorChar +"";
+			if (Platform.getOS () == Platform.OS.Mac) 
+			{
+				searchpath = Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString ().Replace ("Desktop" + dsc + "Summoner.app" + dsc + "Contents" + dsc + "MacOS", "");
+				searchpath += "Library" + dsc + "Application Support" + dsc + "Scrolls" + dsc;
+			}
 
-			Console.WriteLine ("path zero step : " + Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location));
-			Platform.ErrorLog("path zero step : " + Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location));
-			if ((from file in Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).GetFiles ()
-				where file.Name.Contains ("ScrollsLauncher.exe")
+			Platform.ErrorLog("path zero step : " + Directory.GetParent (searchpath));
+			Platform.ErrorLog (searchpath + " contains this files:");
+			foreach (FileInfo file in Directory.GetParent (searchpath).GetFiles ()) 
+			{
+				Platform.ErrorLog("found file: " + file.FullName);
+			}
+
+			if ((from file in Directory.GetParent (searchpath).GetFiles ()
+				where file.Name.Contains ("launcher")
 				select file).Count () > 0) 
 			{
 
 				String folderpath = "";
-				if(Platform.getOS() == Platform.OS.Win) folderpath = Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString () + Path.DirectorySeparatorChar + "game" +  Path.DirectorySeparatorChar + "versions" ;
-				//on mac thers no game-folder
-				if(Platform.getOS() == Platform.OS.Mac) folderpath = Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString () +  Path.DirectorySeparatorChar + "versions" ;
+
+				folderpath = Directory.GetParent (searchpath).ToString() +  Path.DirectorySeparatorChar + "versions" ;
 
 				Console.WriteLine ("path first step : " + folderpath);
 				Platform.ErrorLog("path first step : " + folderpath);
@@ -229,9 +242,14 @@ namespace ScrollsModLoader
 		public static void RestartGame() {
 			//restart the game
 			String installPath = Platform.getGlobalScrollsInstallPath();
-			String fpath = installPath.Split (new string[]{ "game" +  System.IO.Path.DirectorySeparatorChar + "versions"}, StringSplitOptions.RemoveEmptyEntries) [0];
+			String fpath = "";
+			if (Platform.getOS () == Platform.OS.Win) fpath = installPath.Split (new string[]{ "game" +  System.IO.Path.DirectorySeparatorChar + "versions"}, StringSplitOptions.RemoveEmptyEntries) [0];
+			if (Platform.getOS () == Platform.OS.Mac) fpath = installPath.Split (new string[]{ "versions" +  System.IO.Path.DirectorySeparatorChar + "version-"}, StringSplitOptions.RemoveEmptyEntries) [0];
+
 			string ddsc = System.IO.Path.DirectorySeparatorChar+"";
 			string args = "--assetsDir \""+ fpath +"game"+ddsc+"assets"+ddsc+"objects\" --assetIndex \""+fpath+ "game"+ddsc+"assets"+ddsc+"indexes"+ddsc+"index-133-production-win.json\"";
+			if(Platform.getOS() == Platform.OS.Mac) args = "--assetsDir \""+ fpath + "assets"+ddsc+"objects\" --assetIndex \""+fpath+"assets"+ddsc+"indexes"+ddsc+"index-133-production-osx.json\"";
+
 			//string args = "--assetsDir \"..\\..\\..\\assets\\objects\" --assetIndex \"..\\..\\..\\assets\\indexes\\index-133-production-win.json\"";
 			if (getOS () == OS.Win) {
 				string filename = getGlobalScrollsInstallPath () + "..\\..\\Scrolls.exe";
@@ -255,7 +273,11 @@ namespace ScrollsModLoader
 				new Process { StartInfo = { FileName = filename, Arguments = args } }.Start ();
 				Application.Quit ();
 			} else if (getOS () == OS.Mac) {
-				new Process { StartInfo = { FileName = "bash", Arguments = getGlobalScrollsInstallPath() + "/../../../../../run_sleep.sh" + " " +args, UseShellExecute=true } }.Start ();
+
+				//new Process { StartInfo = { FileName = "bash", Arguments = getGlobalScrollsInstallPath() + "/../../../../../run_sleep.sh" + " " +args, UseShellExecute=true } }.Start ();
+				Platform.ErrorLog ("##do: bash"  + " \"" +fpath + "summoner.sh\"" + " " +args);
+				new Process { StartInfo = { FileName = "bash", Arguments = "\"" +fpath + "summoner.sh\"" + " " +args, UseShellExecute=true } }.Start ();
+
 				Application.Quit ();
 			} else {
 				Application.Quit ();
@@ -268,7 +290,8 @@ namespace ScrollsModLoader
 				String runsh = path + "/../../../../../run.sh";
 				String runshsleep = path + "/../../../../../run_sleep.sh";
 
-				if (!File.Exists (runshsleep)) {
+				//new launcher doesnt has a run.sh
+				/*if (!File.Exists (runshsleep)) {
 					String[] lines = File.ReadAllLines (runsh);
 					StreamWriter writer = File.CreateText (runshsleep);
 					for (int i = 0; i < lines.Count(); i++) {
@@ -279,7 +302,7 @@ namespace ScrollsModLoader
 						writer.WriteLine (line);
 					}
 					writer.Close ();
-				}
+				}*/
 
 				if (!File.Exists (path + "/System.Drawing.dll")) {
 					byte[] sysdrawing = System.Reflection.Assembly.GetExecutingAssembly ().GetManifestResourceStream ("ScrollsModLoader.Resources.System.Drawing.dll").ReadToEnd ();

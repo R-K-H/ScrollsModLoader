@@ -34,21 +34,27 @@ namespace ScrollsModLoader
 		}
 
 		public static void standalonePatch () {
+			bool writetofile = (Platform.getOS () == Platform.OS.Mac);
+
 			Console.WriteLine ("Preparing...");
+			if(writetofile) Platform.ErrorLog ("Preparing...");
 
 			//get Path of Scrolls Data Folder
 			String installPath = Platform.getGlobalScrollsInstallPath();
 			String modloaderpath = Platform.getModLoaderPath();
 			if (installPath == null) return;
 			Console.WriteLine ("installpath: " +installPath);
+			if(writetofile) Platform.ErrorLog ("installpath: " +installPath);
 			Console.WriteLine ("Creating ModLoader folder...");
-
+			if(writetofile) Platform.ErrorLog("Creating ModLoader folder...");
 			//create modloader folder
 			if (!System.IO.Directory.Exists(modloaderpath)) {
 				System.IO.Directory.CreateDirectory(modloaderpath);
 			}
 
 			Console.WriteLine ("Backup/Reset assembly...");
+			if(writetofile) Platform.ErrorLog("Backup/Reset assembly...");
+
 			//backup original assembly
 			if (!System.IO.File.Exists(modloaderpath+ System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll"))
 				System.IO.File.Copy (installPath+"Assembly-CSharp.dll", modloaderpath + System.IO.Path.DirectorySeparatorChar +"Assembly-CSharp.dll");
@@ -59,6 +65,7 @@ namespace ScrollsModLoader
 			}
 
 			Console.WriteLine ("Copying ModLoader.dll...");
+			if(writetofile) Platform.ErrorLog("Copying ModLoader.dll...");
 			//copy modloader for patching
 			if (System.IO.File.Exists(installPath+"ScrollsModLoader.dll"))
 				System.IO.File.Delete(installPath+"ScrollsModLoader.dll");
@@ -67,25 +74,22 @@ namespace ScrollsModLoader
 			//reset ini
 			if (System.IO.File.Exists(modloaderpath+ System.IO.Path.DirectorySeparatorChar +"mods.ini"))
 				System.IO.File.Delete(modloaderpath+ System.IO.Path.DirectorySeparatorChar +"mods.ini");
-
-			Console.WriteLine ("Patching...");
-			//patch it
-			Patcher patcher = new Patcher();
-			if (!patcher.patchAssembly(installPath)) {
-				Console.WriteLine("Patching failed");
-				//don't safe patch at this point. If the "real" patcher fails, we should tell the user instead
-				//save-patching is for installs, that get broken by updates, etc, to keep the install until ScrollsModLoader is updated
-				Dialogs.showNotification ("Patching failed", "Scrolls Summoner was unable to prepare your client, you are likely using an incompatible version. More at scrollsguide.com");
-				return;
-			}
-
+				
 			Console.WriteLine("Create shortcut...");
-
-			String apppath = installPath.Split (new string[]{ "Scrolls_Data" +  System.IO.Path.DirectorySeparatorChar}, StringSplitOptions.RemoveEmptyEntries) [0];
-			String fpath = installPath.Split (new string[]{ "game" +  System.IO.Path.DirectorySeparatorChar + "versions"}, StringSplitOptions.RemoveEmptyEntries) [0];
+			if(writetofile) Platform.ErrorLog("Create shortcut...");
 			string ddsc = System.IO.Path.DirectorySeparatorChar+"";
+
+			String apppath = "";
+			if(Platform.getOS() == Platform.OS.Win) apppath = installPath.Split (new string[]{ "Scrolls_Data" +  System.IO.Path.DirectorySeparatorChar}, StringSplitOptions.RemoveEmptyEntries) [0];
+			if(Platform.getOS() == Platform.OS.Mac) apppath = installPath.Split (new string[]{ "Data" +  System.IO.Path.DirectorySeparatorChar}, StringSplitOptions.RemoveEmptyEntries) [0] + "MacOS" + ddsc;
+			String fpath = installPath.Split (new string[]{ "game" +  System.IO.Path.DirectorySeparatorChar + "versions"}, StringSplitOptions.RemoveEmptyEntries) [0];
+			if (Platform.getOS () == Platform.OS.Mac) fpath = installPath.Split (new string[]{ "versions" +  System.IO.Path.DirectorySeparatorChar + "version-"}, StringSplitOptions.RemoveEmptyEntries) [0];
+
 			string args = "--assetsDir \""+ fpath +"game"+ddsc+"assets"+ddsc+"objects\" --assetIndex \""+fpath+ "game"+ddsc+"assets"+ddsc+"indexes"+ddsc+"index-133-production-win.json\"";
+			if(Platform.getOS() == Platform.OS.Mac) args = "--assetsDir \""+ fpath + "assets"+ddsc+"objects\" --assetIndex \""+fpath+"assets"+ddsc+"indexes"+ddsc+"index-133-production-osx.json\"";
+
 			String filetxt = "";
+			String filetxt2 = "";
 			switch (Platform.getOS ()) 
 			{
 			case Platform.OS.Win:
@@ -94,13 +98,41 @@ namespace ScrollsModLoader
 				filetxt = "START \"\" \"" + apppath + "\" " + args;
 				break;
 			case Platform.OS.Mac:
-				apppath+="Scrolls.app";
+				apppath +="Scrolls";
+				fpath = System.IO.Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString ().Replace( "Summoner.app" + ddsc + "Contents" + ddsc + "MacOS", "") + "summoner.command";
+				filetxt ="\"" + apppath + "\" " + args; //+path to scrolls.exe + arguments!
+				filetxt2 ="#!/bin/bash\r\n\"" + apppath + "\" " + args; //+path to scrolls.exe + arguments!
 				break;
 			default:
 				break;
 			}
-
 			System.IO.File.WriteAllText (fpath, filetxt);
+
+			if (Platform.getOS () == Platform.OS.Mac) //platform specific patch :D (need this to restart scrolls!)
+			{
+				//make .command executeable
+				new Process { StartInfo = { FileName = "chmod", Arguments = "u+x " + "\"" +fpath + "\"", UseShellExecute=true } }.Start ();
+
+				fpath = installPath.Split (new string[]{ "versions" + System.IO.Path.DirectorySeparatorChar + "version-" }, StringSplitOptions.RemoveEmptyEntries) [0] + "summoner.sh";
+				System.IO.File.WriteAllText (fpath, filetxt2);
+			}
+
+
+
+
+			Console.WriteLine ("Patching...");
+			if(writetofile) Platform.ErrorLog("Patching...");
+			//patch it
+			Patcher patcher = new Patcher();
+			if (!patcher.patchAssembly(installPath)) {
+				Console.WriteLine("Patching failed");
+				if(writetofile) Platform.ErrorLog("Patching failed");
+				//don't safe patch at this point. If the "real" patcher fails, we should tell the user instead
+				//save-patching is for installs, that get broken by updates, etc, to keep the install until ScrollsModLoader is updated
+				Dialogs.showNotification ("Patching failed", "Scrolls Summoner was unable to prepare your client, you are likely using an incompatible version. More at scrollsguide.com");
+				return;
+			}
+
 
 
 
@@ -112,7 +144,8 @@ namespace ScrollsModLoader
 
 		public bool patchAssembly(String installPath) {
 			if (installPath == null) return false;
-
+			bool writetofile = (Platform.getOS () == Platform.OS.Mac);
+			if(writetofile) Platform.ErrorLog ("ModLoader Hooks:");
 			//"weave" the assembly
 			Console.WriteLine ("------------------------------");
 			Console.WriteLine ("ModLoader Hooks:");
@@ -122,6 +155,7 @@ namespace ScrollsModLoader
 			if (!weaveAssembly (installPath+"Assembly-CSharp.dll"))
 				return false;
 			Console.WriteLine ("Weaved Assembly");
+			if(writetofile) Platform.ErrorLog ("Weaved Assembly");
 
 			/*
 			 * add init hack
@@ -137,24 +171,30 @@ namespace ScrollsModLoader
 				Console.WriteLine (exp);
 				return false;
 			}
+			if(writetofile) Platform.ErrorLog ("loaded assembly + self");
 
 			//add hooks
 			if (!Hooks.hookStaticVoidMethodAtEnd ("App.Awake", "ModLoader.Init"))
 				return false;
 
+			if(writetofile) Platform.ErrorLog ("added hocks");
+
 			try {
 
 				//save assembly
 				Console.WriteLine ("Write back patched bytecode...");
+				if(writetofile) Platform.ErrorLog ("Write back patched bytecode...");
 				Hooks.savePatchedAssembly();
 
 				Console.WriteLine ("Platform specific patches...");
+				if(writetofile) Platform.ErrorLog ("Platform specific patches...");
 				Platform.PlatformPatches(installPath);
 				
 			} catch (Exception exp) {
 
 				//also very unlikely, but for safety
 				Console.WriteLine (exp);
+				if(writetofile) Platform.ErrorLog (exp.ToString());
 				return false;
 
 			}

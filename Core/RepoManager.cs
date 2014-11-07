@@ -19,6 +19,7 @@ namespace ScrollsModLoader
 			this.modManager = modManager;
 
 			//add repos
+			this.readRepository ("https://raw.github.com/noHero123/minirepo/master");
 			this.readRepository ("http://mods.Scrollsguide.com/");
 
 			//load repo list
