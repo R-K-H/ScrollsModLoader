@@ -19,18 +19,32 @@ namespace ScrollsModLoader
 			this.modManager = modManager;
 
 			//add repos
-			this.readRepository ("https://raw.github.com/noHero123/minirepo/master");
-			this.readRepository ("http://mods.Scrollsguide.com/");
-
+			try
+			{
+				this.readRepository ("http://mods.Scrollsguide.com/");
+				this.readRepository ("https://raw.github.com/noHero123/minirepo/master");
+			}
+			catch 
+			{
+			}
 			//load repo list
 			String installPath = Platform.getGlobalScrollsInstallPath();
-			String modLoaderPath = Platform.getModLoaderPath() + System.IO.Path.DirectorySeparatorChar;
+			String modLoaderPath = Platform.getModsPath() + System.IO.Path.DirectorySeparatorChar;//.getModLoaderPath() 
 			if (!File.Exists (modLoaderPath+"repo.ini")) {
 				File.CreateText (modLoaderPath+"repo.ini").Close();
 			}
 			String[] repos = File.ReadAllLines (modLoaderPath+"repo.ini");
-			foreach (String repo in repos)
-				this.readRepository(repo);
+			foreach (String repo in repos) 
+			{
+				try
+				{
+					this.readRepository (repo);
+				}
+				catch 
+				{
+
+				}
+			}
 
 		}
 
@@ -170,7 +184,7 @@ namespace ScrollsModLoader
 
 		public void updateRepoList() {
 			String installPath = Platform.getGlobalScrollsInstallPath();
-			String modLoaderPath = Platform.getModLoaderPath() + System.IO.Path.DirectorySeparatorChar;
+			String modLoaderPath = Platform.getModsPath() + System.IO.Path.DirectorySeparatorChar;//.getModLoaderPath() 
 			File.Delete (modLoaderPath+"repo.ini");
 			StreamWriter repoWriter = File.CreateText (modLoaderPath+"repo.ini");
 			foreach (Repo repo in repositories) {

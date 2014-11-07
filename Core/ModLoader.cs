@@ -275,10 +275,8 @@ namespace ScrollsModLoader {
 		{
 			modLoaderPath = Platform.getModLoaderPath()+ System.IO.Path.DirectorySeparatorChar;//Platform.getGlobalScrollsInstallPath() + System.IO.Path.DirectorySeparatorChar + "ModLoader" + System.IO.Path.DirectorySeparatorChar;
 
-
 			//load installed mods
 			modManager = new ModManager (this);
-
 
 			//load order list
 			if (!File.Exists (modLoaderPath+"mods.ini")) {

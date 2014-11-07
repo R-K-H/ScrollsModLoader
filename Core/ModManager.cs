@@ -23,7 +23,7 @@ namespace ScrollsModLoader
 		public List<Item> installedMods = new List<Item> ();
 
 		public ModManager(ModLoader loader) {
-
+		
 			this.loader = loader;
 			repoManager = new RepoManager (this);
 

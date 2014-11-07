@@ -27,8 +27,10 @@ namespace ScrollsModLoader
 
 		public static void Log()
 		{
-			foreach (MethodDefinition def in hooks)
+			foreach (MethodDefinition def in hooks) 
+			{
 				Console.WriteLine (def);
+			}
 		}
 
 		public ScrollsFilter ()

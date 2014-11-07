@@ -35,7 +35,7 @@ namespace ScrollsModLoader
 
 		public static void standalonePatch () {
 			bool writetofile = (Platform.getOS () == Platform.OS.Mac);
-
+			Platform.ErrorLog ("stand alone patch");
 			Console.WriteLine ("Preparing...");
 			if(writetofile) Platform.ErrorLog ("Preparing...");
 
@@ -75,6 +75,9 @@ namespace ScrollsModLoader
 			if (System.IO.File.Exists(modloaderpath+ System.IO.Path.DirectorySeparatorChar +"mods.ini"))
 				System.IO.File.Delete(modloaderpath+ System.IO.Path.DirectorySeparatorChar +"mods.ini");
 				
+
+
+
 			Console.WriteLine("Create shortcut...");
 			if(writetofile) Platform.ErrorLog("Create shortcut...");
 			string ddsc = System.IO.Path.DirectorySeparatorChar+"";
@@ -85,8 +88,8 @@ namespace ScrollsModLoader
 			String fpath = installPath.Split (new string[]{ "game" +  System.IO.Path.DirectorySeparatorChar + "versions"}, StringSplitOptions.RemoveEmptyEntries) [0];
 			if (Platform.getOS () == Platform.OS.Mac) fpath = installPath.Split (new string[]{ "versions" +  System.IO.Path.DirectorySeparatorChar + "version-"}, StringSplitOptions.RemoveEmptyEntries) [0];
 
-			string args = "--assetsDir \""+ fpath +"game"+ddsc+"assets"+ddsc+"objects\" --assetIndex \""+fpath+ "game"+ddsc+"assets"+ddsc+"indexes"+ddsc+"index-133-production-win.json\"";
-			if(Platform.getOS() == Platform.OS.Mac) args = "--assetsDir \""+ fpath + "assets"+ddsc+"objects\" --assetIndex \""+fpath+"assets"+ddsc+"indexes"+ddsc+"index-133-production-osx.json\"";
+			string args = "--assetsDir \""+ fpath +"game"+ddsc+"assets"+ddsc+"objects\" --assetIndex \""+fpath+ "game"+ddsc+"assets"+ddsc+"indexes"+ddsc+"index-" + Platform.getVersionNumber(installPath) + "-production-win.json\"";
+			if(Platform.getOS() == Platform.OS.Mac) args = "--assetsDir \""+ fpath + "assets"+ddsc+"objects\" --assetIndex \""+fpath+"assets"+ddsc+"indexes"+ddsc+"index-" + Platform.getVersionNumber(installPath) + "-production-osx.json\"";
 
 			String filetxt = "";
 			String filetxt2 = "";
@@ -138,6 +141,7 @@ namespace ScrollsModLoader
 
 			Dialogs.showNotification ("Patching complete", "Summoner successfully patched your Scrolls installation. Visit scrollsguide.com/summoner for more information. You can now start Scrolls and enjoy the benefits of Summoner. Warning: fullscreen users may have to manually restart the game");
 			Console.WriteLine ("Done");
+			if(writetofile) Platform.ErrorLog ("Done");
 			return;
 		}
 

@@ -15,7 +15,6 @@ namespace ScrollsModLoader
 		private static byte[] token = new byte[] { 8, 95, 174, 161, 22, 41, 180, 133 }; //public key
 
 		public static bool tryUpdate() {
-
 			WebClientTimeOut client = new WebClientTimeOut ();
 			String versionMessageRaw;
 			try {
