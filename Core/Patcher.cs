@@ -88,8 +88,8 @@ namespace ScrollsModLoader
 			String fpath = installPath.Split (new string[]{ "game" +  System.IO.Path.DirectorySeparatorChar + "versions"}, StringSplitOptions.RemoveEmptyEntries) [0];
 			if (Platform.getOS () == Platform.OS.Mac) fpath = installPath.Split (new string[]{ "versions" +  System.IO.Path.DirectorySeparatorChar + "version-"}, StringSplitOptions.RemoveEmptyEntries) [0];
 
-			string args = "--assetsDir \""+ fpath +"game"+ddsc+"assets"+ddsc+"objects\" --assetIndex \""+fpath+ "game"+ddsc+"assets"+ddsc+"indexes"+ddsc+"index-" + Platform.getVersionNumber(installPath) + "-production-win.json\"";
-			if(Platform.getOS() == Platform.OS.Mac) args = "--assetsDir \""+ fpath + "assets"+ddsc+"objects\" --assetIndex \""+fpath+"assets"+ddsc+"indexes"+ddsc+"index-" + Platform.getVersionNumber(installPath) + "-production-osx.json\"";
+			string args = "--assetsDir \""+ fpath +"game"+ddsc+"assets"+ddsc+"objects\" --assetIndex \""+fpath+ "game"+ddsc+"assets"+ddsc+"indexes"+ddsc+"index-" + Platform.getVersionNumber() + "-production-win.json\"";
+			if(Platform.getOS() == Platform.OS.Mac) args = "--assetsDir \""+ fpath + "assets"+ddsc+"objects\" --assetIndex \""+fpath+"assets"+ddsc+"indexes"+ddsc+"index-" + Platform.getVersionNumber() + "-production-osx.json\"";
 
 			String filetxt = "";
 			String filetxt2 = "";

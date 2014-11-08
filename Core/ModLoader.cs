@@ -273,15 +273,18 @@ namespace ScrollsModLoader {
 
 		public ModLoader ()
 		{
+			Platform.ErrorLog("ModLoader creator");
 			modLoaderPath = Platform.getModLoaderPath()+ System.IO.Path.DirectorySeparatorChar;//Platform.getGlobalScrollsInstallPath() + System.IO.Path.DirectorySeparatorChar + "ModLoader" + System.IO.Path.DirectorySeparatorChar;
 
 			//load installed mods
 			modManager = new ModManager (this);
 
+			Platform.ErrorLog("load order list");
 			//load order list
 			if (!File.Exists (modLoaderPath+"mods.ini")) {
 				File.CreateText (modLoaderPath+"mods.ini").Close();
 				//first launch, set hooks for patches
+				Platform.ErrorLog("queuerepatch");
 				this.queueRepatch();
 			}
 			modOrder = File.ReadAllLines (modLoaderPath+"mods.ini").ToList();
@@ -308,18 +311,23 @@ namespace ScrollsModLoader {
 			//get Scrolls Types list
 			TypeDefinitionCollection types = AssemblyFactory.GetAssembly (modLoaderPath+"Assembly-CSharp.dll").MainModule.Types;
 
+			Platform.ErrorLog("get ModAPI");
 			//get ModAPI
 			publicAPI = new APIHandler (this);
 
+			Platform.ErrorLog("loadPatchesr");
 			//loadPatches
 			this.loadPatches (types);
 
+			Platform.ErrorLog("loadModsStatic");
 			//loadModsStatic
 			this.loadModsStatic (types);
 
+			Platform.ErrorLog("repatch");
 			//repatch
 			this.repatchIfNeeded ();
 
+			Platform.ErrorLog("ModLoader Hooks:...");
 			Console.WriteLine ("------------------------------");
 			Console.WriteLine ("ModLoader Hooks:");
 			ScrollsFilter.Log ();

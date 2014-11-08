@@ -16,8 +16,10 @@ namespace ScrollsModLoader
 
 		public RepoManager (ModManager modManager)
 		{
+			Platform.ErrorLog("repomanager creator");
 			this.modManager = modManager;
 
+			Platform.ErrorLog("read scrollsguide + nohero");
 			//add repos
 			try
 			{
@@ -34,6 +36,7 @@ namespace ScrollsModLoader
 				File.CreateText (modLoaderPath+"repo.ini").Close();
 			}
 			String[] repos = File.ReadAllLines (modLoaderPath+"repo.ini");
+			Platform.ErrorLog("read repos in list");
 			foreach (String repo in repos) 
 			{
 				try
@@ -45,6 +48,7 @@ namespace ScrollsModLoader
 
 				}
 			}
+			Platform.ErrorLog("repomanager creator end");
 
 		}
 

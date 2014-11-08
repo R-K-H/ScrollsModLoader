@@ -64,14 +64,23 @@ namespace ScrollsModLoader
 				} 
 				else 
 				{
+					//System.IO.File.AppendAllText (path, s + "\r\n");
 					System.IO.File.WriteAllText (path, s+"\r\n");
 					Platform.written = true;
 				}
 			}
 		}
 
+		public static String ModsPath = null;
+		public static String ModLoaderPath = null;
+		public static String VersionNumber = null;
+		public static String GlobalScrollsInstallPath = null;
+
 		public static String getModsPath()
 		{
+			if (Platform.ModsPath != null)
+				return Platform.ModsPath;
+
 			String path = "";
 			String up = ".." + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar;
 			path= Platform.getGlobalScrollsInstallPath();
@@ -79,6 +88,7 @@ namespace ScrollsModLoader
 			if (Platform.getOS () == Platform.OS.Mac) path += up + up + up + up + up + up + up + "Mods";
 			Console.WriteLine ("mods: " + path);
 			Platform.ErrorLog("mods: " + path);
+			Platform.ModsPath = path;
 			return path;
 		}
 
@@ -86,33 +96,50 @@ namespace ScrollsModLoader
 
 		public static String getModLoaderPath()
 		{
+			if (Platform.ModLoaderPath != null)
+				return Platform.ModLoaderPath;
+
 			String path = "";
 			path= Platform.getGlobalScrollsInstallPath()+ "ModLoader";
 			Console.WriteLine ("modloader: " + path);
 			Platform.ErrorLog("modloader: " + path);
+			Platform.ModLoaderPath = path;
 			return path;
 		}
 
 
-		public static String getVersionNumber(String globalScrollsInstallPath)
+		public static String getVersionNumber()
 		{
+			if (Platform.VersionNumber != null)
+				return Platform.VersionNumber;
+
+			String globalScrollsInstallPath = Platform.getGlobalScrollsInstallPath ();
 			String version = "0";
 			if (globalScrollsInstallPath.Contains ("version-")) 
 			{
 				version = globalScrollsInstallPath.Split (new string[]{ "version-" }, StringSplitOptions.RemoveEmptyEntries) [1].Split ('-') [0];
 			}
+
+			Platform.VersionNumber = version;
 			return version;
 		}
 
-		public static String getGlobalScrollsInstallPath() {
+		public static String getGlobalScrollsInstallPath() 
+		{
+
+			if (Platform.GlobalScrollsInstallPath != null)
+				return Platform.GlobalScrollsInstallPath;
+
 			String path = null;
 			//if we are already loaded from the game folder, get that instead
 			if ((from file in Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).GetFiles ()
 			     where file.Name.Contains ("Assembly-CSharp.dll")
 			     select file).Count () > 0) 
 			{
-
-				return Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString () + Path.DirectorySeparatorChar;
+				Platform.GlobalScrollsInstallPath = Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString () + Path.DirectorySeparatorChar;
+				Console.WriteLine ("GlobalScrollsInstallPath is : " + Platform.GlobalScrollsInstallPath);
+				Platform.ErrorLog("GlobalScrollsInstallPath is : " + Platform.GlobalScrollsInstallPath);
+				return Platform.GlobalScrollsInstallPath;
 			}
 
 			// we are located in ScrollsLauncher folder
@@ -208,11 +235,12 @@ namespace ScrollsModLoader
 					{
 						folderpath += Path.DirectorySeparatorChar + fullnewest + timestamp + Path.DirectorySeparatorChar + "MacScrolls.app" + Path.DirectorySeparatorChar + "Contents" + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "Managed" + Path.DirectorySeparatorChar;
 					}
+						
 
-					Console.WriteLine ("path is : " + folderpath);
-					Platform.ErrorLog("path is : " + folderpath);
-
-					return folderpath;
+					Platform.GlobalScrollsInstallPath = folderpath;
+					Console.WriteLine ("GlobalScrollsInstallPath is : " + Platform.GlobalScrollsInstallPath);
+					Platform.ErrorLog("GlobalScrollsInstallPath is : " + Platform.GlobalScrollsInstallPath);
+					return Platform.GlobalScrollsInstallPath;
 				}
 
 
@@ -237,8 +265,12 @@ namespace ScrollsModLoader
 							Dialogs.showNotification("Wrong Selection", "The selected file is not a valid Scrolls game folder. Scrolls Summoner will close now");
 							return null;
 						}
-					}	
-					return path;
+					}
+
+					Platform.GlobalScrollsInstallPath = path;
+					Console.WriteLine ("GlobalScrollsInstallPath is : " + Platform.GlobalScrollsInstallPath);
+					Platform.ErrorLog("GlobalScrollsInstallPath is : " + Platform.GlobalScrollsInstallPath);
+					return Platform.GlobalScrollsInstallPath;
 				case Platform.OS.Mac:
 
 					//Apps are bundles (== folders) on MacOS
@@ -268,8 +300,10 @@ namespace ScrollsModLoader
 					return null;
 			}
 
-			Console.WriteLine("Install Path: "+path);
-			return path;
+			Platform.GlobalScrollsInstallPath = path;
+			Console.WriteLine ("GlobalScrollsInstallPath is : " + Platform.GlobalScrollsInstallPath);
+			Platform.ErrorLog("GlobalScrollsInstallPath is : " + Platform.GlobalScrollsInstallPath);
+			return Platform.GlobalScrollsInstallPath;
 		}
 
 		public static void RestartGame() {
@@ -280,8 +314,8 @@ namespace ScrollsModLoader
 			if (Platform.getOS () == Platform.OS.Mac) fpath = installPath.Split (new string[]{ "versions" +  System.IO.Path.DirectorySeparatorChar + "version-"}, StringSplitOptions.RemoveEmptyEntries) [0];
 
 			string ddsc = System.IO.Path.DirectorySeparatorChar+"";
-			string args = "--assetsDir \""+ fpath +"game"+ddsc+"assets"+ddsc+"objects\" --assetIndex \""+fpath+ "game"+ddsc+"assets"+ddsc+"indexes"+ddsc+"index-"+Platform.getVersionNumber(installPath)+"-production-win.json\"";
-			if(Platform.getOS() == Platform.OS.Mac) args = "--assetsDir \""+ fpath + "assets"+ddsc+"objects\" --assetIndex \""+fpath+"assets"+ddsc+"indexes"+ddsc+"index-"+Platform.getVersionNumber(installPath)+"-production-osx.json\"";
+			string args = "--assetsDir \""+ fpath +"game"+ddsc+"assets"+ddsc+"objects\" --assetIndex \""+fpath+ "game"+ddsc+"assets"+ddsc+"indexes"+ddsc+"index-"+Platform.getVersionNumber()+"-production-win.json\"";
+			if(Platform.getOS() == Platform.OS.Mac) args = "--assetsDir \""+ fpath + "assets"+ddsc+"objects\" --assetIndex \""+fpath+"assets"+ddsc+"indexes"+ddsc+"index-"+Platform.getVersionNumber()+"-production-osx.json\"";
 
 			if (getOS () == OS.Win) {
 				string filename = getGlobalScrollsInstallPath () + "..\\..\\Scrolls.exe";

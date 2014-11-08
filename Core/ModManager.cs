@@ -24,21 +24,26 @@ namespace ScrollsModLoader
 
 		public ModManager(ModLoader loader) {
 		
+			Platform.ErrorLog("ModManager creator");
+			modsPath = Platform.getModsPath();
+
+			if (!Directory.Exists (modsPath))
+				Directory.CreateDirectory (modsPath);
+
 			this.loader = loader;
 			repoManager = new RepoManager (this);
 
 			String installPath = Platform.getGlobalScrollsInstallPath();
 			String modLoaderPath = Platform.getModLoaderPath() + System.IO.Path.DirectorySeparatorChar;
 
-			modsPath = Platform.getModsPath();
-
-			if (!Directory.Exists (modsPath))
-				Directory.CreateDirectory (modsPath);
 
 
 
+			Platform.ErrorLog("loadInstalledMods");
 			this.loadInstalledMods ();
+			Platform.ErrorLog("checkForUpdates");
 			this.checkForUpdates   ();
+			Platform.ErrorLog("sortInstalledMods");
 			this.sortInstalledMods ();
 		}
 
