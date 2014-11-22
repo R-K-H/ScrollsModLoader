@@ -58,8 +58,8 @@ namespace ScrollsModLoader {
 					List<BaseModWithId> hookedMods;
 					MethodDefinition[] requestedHooks;
 					try {
-						requestedHooks = (MethodDefinition[])mod.GetType ().GetMethod ("GetHooks").Invoke (null, new object[] {types,
-							SharedConstants.getExeVersionInt () });
+						int exeversion = SharedConstants.getGameVersion().getMinor();
+						requestedHooks = (MethodDefinition[])mod.GetType ().GetMethod ("GetHooks").Invoke (null, new object[] {types, exeversion });
 					} catch (Exception ex) {
 						Console.WriteLine (ex);
 						modsToUnload.Add (modId);
@@ -409,10 +409,8 @@ namespace ScrollsModLoader {
 			//get hooks
 			MethodDefinition[] hooks = null;
 			try {
-				hooks =(MethodDefinition[]) modClass.GetMethod ("GetHooks").Invoke (null, new object[] {
-					types,
-					SharedConstants.getExeVersionInt ()
-				});
+				int exeversion = SharedConstants.getGameVersion().getMinor();
+				hooks =(MethodDefinition[]) modClass.GetMethod ("GetHooks").Invoke (null, new object[] { types, exeversion });
 			} catch (Exception e) {
 				Console.WriteLine ("Error executing GetHooks for mod: " + filepath);
 				Console.WriteLine (e);
