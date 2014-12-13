@@ -53,7 +53,18 @@ namespace ScrollsModLoader
 		public static void ErrorLog(string s)
 		{
 			string dsc = System.IO.Path.DirectorySeparatorChar+"";
-			string path = System.IO.Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString ().Replace( "Summoner.app" + dsc + "Contents" + dsc + "MacOS", "") + "summonerlog1.txt";
+			string path = "summonerlog1.txt";
+
+			if (Platform.getOS () == Platform.OS.Mac) 
+			{
+					path = System.IO.Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString ().Replace( "Summoner.app" + dsc + "Contents" + dsc + "MacOS", "") + "summonerlog1.txt";
+			}
+
+			if (Platform.getOS () == Platform.OS.Win) 
+			{
+				path = System.IO.Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString () + dsc + "summonerlog1.txt";
+			}
+
 			if (!System.IO.File.Exists (path)) 
 			{
 				System.IO.File.WriteAllText (path, s+"\r\n");

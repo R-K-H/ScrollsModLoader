@@ -34,7 +34,7 @@ namespace ScrollsModLoader
 		}
 
 		public static void standalonePatch () {
-			bool writetofile = (Platform.getOS () == Platform.OS.Mac);
+			bool writetofile = true; //(Platform.getOS () == Platform.OS.Mac);
 			Platform.ErrorLog ("stand alone patch");
 			Console.WriteLine ("Preparing...");
 			if(writetofile) Platform.ErrorLog ("Preparing...");
