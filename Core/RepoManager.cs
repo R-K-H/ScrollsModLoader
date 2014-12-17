@@ -23,7 +23,7 @@ namespace ScrollsModLoader
 			//add repos
 			try
 			{
-				this.readRepository ("http://mods.Scrollsguide.com/");
+				//this.readRepository ("http://mods.Scrollsguide.com/");//will readd this when the mods are updated!!!
 				this.readRepository ("https://raw.github.com/noHero123/minirepo/master");
 			}
 			catch 
