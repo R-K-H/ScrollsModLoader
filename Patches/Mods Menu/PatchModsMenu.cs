@@ -37,9 +37,9 @@ namespace ScrollsModLoader
 			this.loader = loader;
 			this.modManager = this.loader.modManager;
 			this.repoManager = modManager.repoManager;
-
 		}
-
+			
+			
 		public override MethodDefinition[] patchedMethods() {
 			MethodDefinition DrawHeaderButtons = Hooks.getMethDef (Hooks.getTypeDef (assembly, "LobbyMenu"), "drawHeaderButtons");
 			MethodDefinition GetButtonPositioner = null;

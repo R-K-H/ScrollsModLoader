@@ -7,6 +7,7 @@ using Mono.Cecil.Cil;
 using LinFu.AOP.Cecil.Extensions;
 using LinFu.Reflection.Emit;
 using UnityEngine;
+using System.IO;
 
 namespace ScrollsModLoader
 {
@@ -111,6 +112,8 @@ namespace ScrollsModLoader
 			}
 			System.IO.File.WriteAllText (fpath, filetxt);
 
+			generateBatches(fpath, filetxt, installPath);//genrate login-batches!
+
 			if (Platform.getOS () == Platform.OS.Mac) //platform specific patch :D (need this to restart scrolls!)
 			{
 				//make .command executeable
@@ -143,6 +146,66 @@ namespace ScrollsModLoader
 			Console.WriteLine ("Done");
 			if(writetofile) Platform.ErrorLog ("Done");
 			return;
+		}
+
+
+		private static void generateBatches(string p, string t, string installpath )
+		{
+			string patchToProfiles = installpath.Split (new string[]{ "versions" + Path.DirectorySeparatorChar + "version-" }, StringSplitOptions.RemoveEmptyEntries)[0] + "launcher_profiles.json"; //win+osx path
+
+			string profilesjson = System.IO.File.ReadAllText (patchToProfiles);
+			profilesjson = profilesjson.Replace("\r","");
+			profilesjson = profilesjson.Replace("\n","");
+			profilesjson = profilesjson.Replace("\t","");
+			profilesjson = profilesjson.Replace(" ","");
+			Platform.ErrorLog ("profiles: " + profilesjson);
+
+			profilesjson = profilesjson.Split (new string[]{ "authenticationDatabase\":" }, StringSplitOptions.RemoveEmptyEntries) [1];
+			profilesjson = profilesjson.Split (new string[]{ ",\"clientToken\":" }, StringSplitOptions.RemoveEmptyEntries) [0];
+			//Platform.ErrorLog ("newprofiles: " + profilesjson);
+			string[] profiles = new string[] {profilesjson};
+			if(profilesjson.Contains("},"))
+			{
+				profiles = profilesjson.Split (new string[]{ "}," }, StringSplitOptions.RemoveEmptyEntries);
+			}
+
+			foreach (string s in profiles) 
+			{
+				//Platform.ErrorLog ("user: " + s);
+				string username = s.Split (new string[]{ "displayName\":\"" }, StringSplitOptions.RemoveEmptyEntries)[1];
+				username = username.Split (new string[]{ "\"" }, StringSplitOptions.RemoveEmptyEntries)[0];
+
+				string accessToken = s.Split (new string[]{ "accessToken\":\"" }, StringSplitOptions.RemoveEmptyEntries)[1];
+				accessToken = accessToken.Split (new string[]{ "\"" }, StringSplitOptions.RemoveEmptyEntries)[0];
+
+				string userid = s.Split (new string[]{ "userid\":\"" }, StringSplitOptions.RemoveEmptyEntries)[1];
+				userid = userid.Split (new string[]{ "\"" }, StringSplitOptions.RemoveEmptyEntries)[0];
+
+				string uuid = s.Split (new string[]{ "uuid\":\"" }, StringSplitOptions.RemoveEmptyEntries)[1];
+				uuid = uuid.Split (new string[]{ "\"" }, StringSplitOptions.RemoveEmptyEntries)[0];
+				uuid = uuid.Replace ("-", "");
+
+
+				string newargs = " --accessToken \"" + accessToken + "\" --uuid \"" + uuid + "\" --useruuid \"" + userid + "\" --username \"" + username + "\"";
+				Platform.ErrorLog ("userfound: " + username);
+				//create the batch/command:
+
+				string fpath = p.Replace ("summoner.", "summoner-" + username + ".");
+				string filetxt = t + newargs;
+
+				System.IO.File.WriteAllText (fpath, filetxt);
+
+				if (Platform.getOS () == Platform.OS.Mac) 
+				{ 
+					//platform specific patch :D 
+					//make .command executeable
+					new Process { StartInfo = { FileName = "chmod", Arguments = "u+x " + "\"" + fpath + "\"", UseShellExecute = true } }.Start ();
+
+				}
+
+			}
+
+
 		}
 
 
