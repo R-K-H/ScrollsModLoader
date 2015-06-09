@@ -25,6 +25,7 @@ namespace ScrollsModLoader
 			{
 				//this.readRepository ("http://mods.Scrollsguide.com/");//will readd this when the mods are updated!!!
 				this.readRepository ("https://raw.github.com/noHero123/minirepo/master");
+				this.readRepository ("https://raw.github.com/dga711/dgarepo/master/");
 			}
 			catch 
 			{
