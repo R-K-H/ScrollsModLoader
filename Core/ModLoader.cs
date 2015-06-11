@@ -745,7 +745,7 @@ namespace ScrollsModLoader {
 		}
 
 		public static int getVersion() {
-			return 7;
+			return 8;
 		}
 	}
 }

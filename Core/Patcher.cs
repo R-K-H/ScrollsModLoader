@@ -94,30 +94,40 @@ namespace ScrollsModLoader
 
 			String filetxt = "";
 			String filetxt2 = "";
+			String errorlog = "";
+			String errorlogpath = "";
 			switch (Platform.getOS ()) 
 			{
 			case Platform.OS.Win:
+				errorlogpath = fpath + "errorlog.bat";
+				errorlog = "START \"\" \"" + apppath +"Scrolls_Data"+ ddsc + "output_log.txt"+ "\"";
 				apppath += "Scrolls.exe";
 				fpath += "summoner.bat";
 				filetxt = "START \"\" \"" + apppath + "\" " + args;
 				break;
 			case Platform.OS.Mac:
+				errorlogpath = System.IO.Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString ().Replace( "Summoner.app" + ddsc + "Contents" + ddsc + "MacOS", "") + "errorlog.command";
+				errorlog ="open -a Textedit \"" + System.IO.Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString ().Replace( "Desktop" + ddsc + "Summoner.app" + ddsc + "Contents" + ddsc + "MacOS", "") + "Library" + ddsc + "Logs" + ddsc + "Unity" + ddsc + "Player.log"+ "\"";
 				apppath +="Scrolls";
 				fpath = System.IO.Directory.GetParent (System.Reflection.Assembly.GetExecutingAssembly ().Location).ToString ().Replace( "Summoner.app" + ddsc + "Contents" + ddsc + "MacOS", "") + "summoner.command";
 				filetxt ="\"" + apppath + "\" " + args; //+path to scrolls.exe + arguments!
 				filetxt2 ="#!/bin/bash\r\n\"" + apppath + "\" " + args; //+path to scrolls.exe + arguments!
+
 				break;
 			default:
 				break;
 			}
 			System.IO.File.WriteAllText (fpath, filetxt);
+			System.IO.File.WriteAllText (errorlogpath, errorlog);
 
 			generateBatches(fpath, filetxt, installPath);//genrate login-batches!
+
 
 			if (Platform.getOS () == Platform.OS.Mac) //platform specific patch :D (need this to restart scrolls!)
 			{
 				//make .command executeable
 				new Process { StartInfo = { FileName = "chmod", Arguments = "u+x " + "\"" +fpath + "\"", UseShellExecute=true } }.Start ();
+				new Process { StartInfo = { FileName = "chmod", Arguments = "u+x " + "\"" +errorlogpath + "\"", UseShellExecute=true } }.Start ();
 
 				fpath = installPath.Split (new string[]{ "versions" + System.IO.Path.DirectorySeparatorChar + "version-" }, StringSplitOptions.RemoveEmptyEntries) [0] + "summoner.sh";
 				System.IO.File.WriteAllText (fpath, filetxt2);
@@ -207,6 +217,7 @@ namespace ScrollsModLoader
 
 
 		}
+			
 
 
 		public bool patchAssembly(String installPath) {
